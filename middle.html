@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>居中</title>
+  <style>
+  /** 水平，垂直居中，child未知大小*/
+.box{
+  width: 220px;
+  height: 220px;
+  background: #eee;
+}
+
+.child{
+  border: 1px solid #000
+}
+
+/** 方法 1 */
+/* .box{
+  text-align: center;
+  line-height: 220px;
+}
+.child{
+  display: inline;
+} */
+
+/** 方法 2 */
+.box{
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/** 方法 3 */
+/* .box{
+  position: relative;
+}
+.child {
+ position : absolute;
+ top: 50%;
+ left:50%;
+ transform: translate(-50%, -50%);
+} */
+
+/** 方法 4 */
+/* .box{
+  text-align: center;
+}
+i{
+  width:0;
+  height: 220px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.child{
+  display: inline-block;
+  vertical-align: middle;
+} */
+
+
+/** 方法 5 */
+
+  </style>
+</head>
+<body>
+  <div class="box">
+    <i></i>
+    <span class="child">child box</span>
+  </div>
+
+</body>
+</html>
+
