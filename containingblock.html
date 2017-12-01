@@ -1,49 +1,355 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<title>什么是 "containing block"</title>
-</head>
-<body>
-<div id="wmd-preview" class="wmd-preview"><div class="md-section-divider"></div><p data-anchor-id="ai4m">官方定义：一个元素盒子的位置和大小有时相对于某个矩形来计算的，此矩形称为此元素的包含块。简写为：C.B. <br>
-有以下几种情况： <br>
-1、根元素所在的包含块是一个长方形，称为初始的包含块。 <br>
-2、假如元素的position设为‘relative’或‘static’，包含块是由最近的父容器块的内容区边缘形成的。 <br>
-3、假如元素的position设为‘fixed’，包含块是由所在的viewpoint或page area决定。 <br>
-4、假如元素的position设为‘absolute’，包含块是由最近带有‘position’属性的祖先决定。</p><ul data-anchor-id="s5e4">
-<li><p>祖先元素是行内元素，包含块是第一个和最后一个内联盒子所包围的填充盒子，在CSS2.1，行内元素跨越多行，那么包含块是未定义的，否则，包含块是由祖先的补白形成。（<del>翻译的有些不清楚</del>）</p>
 
-<p><strong>假如没有那样的祖先，包含块就是初始 C.B.</strong></p></li>
-</ul><hr><p data-anchor-id="fzyv">代码示例：</p><pre data-anchor-id="aiia"><code>&lt;!DOCTYPE HTML"&gt;
-&lt;html&gt;
-    &lt;head&gt;
-       &lt;TITLE&gt;Illustration of containing blocks&lt;/TITLE&gt;
-    &lt;/head&gt;
-    &lt;body id="body"&gt;
-        &lt;div id="div1"&gt;
-            &lt;p id="p1"&gt;This is text in the first paragraph...&lt;/P&gt;
-            &lt;p id="p2"&gt;This is text &lt;em id="em1"&gt; in the 
-            &lt;strong id="strong1"&gt;second&lt;/strong&gt; paragraph.&lt;/em&gt;&lt;/P&gt;
-       &lt;/div&gt;
-    &lt;/body&gt;&lt;/html&gt;
-</code></pre><p data-anchor-id="ztpj">元素 --- 包含块 <br>
-html --- 初始 C.B. <br>
-body --- html <br>
-div1 --- body <br>
-p1 --- div1 <br>
-p2 --- div1 <br>
-em1 --- p2 <br>
-strong1 --- p2</p><p data-anchor-id="s97i">假如设置div1:</p><pre data-anchor-id="2sza"><code>#div1 { position: absolute; left: 50px; top: 50px }
-</code></pre><p data-anchor-id="c5mx">div1的包含块将不是body，而变成html.</p><p data-anchor-id="dak1">假如也设置em1:</p><pre data-anchor-id="8it0"><code>#div1 { position: absolute; left: 50px; top: 50px }
-#em1  { position: absolute; left: 100px; top: 100px }
-</code></pre><p data-anchor-id="xhn9">上述包含块发生什么变化？</p><hr><p data-anchor-id="cm5c">元素 --- 包含块 <br>
-body --- html <br>
-<strong>div1 --- 初始 C.B.</strong> <br>
-p1 --- div1 <br>
-p2 --- div1 <br>
-<strong>em1 --- div1</strong> <br>
-strong1 --- p2</p><p data-anchor-id="f6j2">W3c传送门：<a href="http://www.w3.org/TR/2011/REC-CSS2-20110607/visudet.html#containing-block-details" target="_blank">containing-block-details</a></p><p data-anchor-id="17y9">参考： <br>
-1、<a href="http://www.ddcat.net/blog/?p=1336" target="_blank">CSS核心：包含块（Containing Block）</a> <br>
-2、<a href="http://www.zhihu.com/question/19926700" target="_blank">CSS 中，为什么绝对定位（absolute）的父级元素必须是相对定位（relative）？</a></p></div>
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <style>
+        /*--------------------------------------------------------------------------------------------- * Copyright (c) Microsoft Corporation. All rights reserved. * Licensed under the MIT License. See License.txt in the project root for license information. *--------------------------------------------------------------------------------------------*/
+
+        body {
+            font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+            font-size: 14px;
+            padding: 0 12px;
+            line-height: 22px;
+            word-wrap: break-word;
+        }
+
+        body.scrollBeyondLastLine {
+            margin-bottom: calc(100vh - 22px);
+        }
+
+        body.showEditorSelection .code-line {
+            position: relative;
+        }
+
+        body.showEditorSelection .code-active-line:before,
+        body.showEditorSelection .code-line:hover:before {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: -12px;
+            height: 100%;
+        }
+
+        body.showEditorSelection li.code-active-line:before,
+        body.showEditorSelection li.code-line:hover:before {
+            left: -30px;
+        }
+
+        .vscode-light.showEditorSelection .code-active-line:before {
+            border-left: 3px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .vscode-light.showEditorSelection .code-line:hover:before {
+            border-left: 3px solid rgba(0, 0, 0, 0.40);
+        }
+
+        .vscode-dark.showEditorSelection .code-active-line:before {
+            border-left: 3px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .vscode-dark.showEditorSelection .code-line:hover:before {
+            border-left: 3px solid rgba(255, 255, 255, 0.60);
+        }
+
+        .vscode-high-contrast.showEditorSelection .code-active-line:before {
+            border-left: 3px solid rgba(255, 160, 0, 0.7);
+        }
+
+        .vscode-high-contrast.showEditorSelection .code-line:hover:before {
+            border-left: 3px solid rgba(255, 160, 0, 1);
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        a {
+            color: #4080D0;
+            text-decoration: none;
+        }
+
+        a:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 1px solid -webkit-focus-ring-color;
+            outline-offset: -1px;
+        }
+
+        hr {
+            border: 0;
+            height: 2px;
+            border-bottom: 2px solid;
+        }
+
+        h1 {
+            padding-bottom: 0.3em;
+            line-height: 1.2;
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-weight: normal;
+        }
+
+        h1 code,
+        h2 code,
+        h3 code,
+        h4 code,
+        h5 code,
+        h6 code {
+            font-size: inherit;
+            line-height: auto;
+        }
+
+        a:hover {
+            color: #4080D0;
+            text-decoration: underline;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table>thead>tr>th {
+            text-align: left;
+            border-bottom: 1px solid;
+        }
+
+        table>thead>tr>th,
+        table>thead>tr>td,
+        table>tbody>tr>th,
+        table>tbody>tr>td {
+            padding: 5px 10px;
+        }
+
+        table>tbody>tr+tr>td {
+            border-top: 1px solid;
+        }
+
+        blockquote {
+            margin: 0 7px 0 5px;
+            padding: 0 16px 0 10px;
+            border-left: 5px solid;
+        }
+
+        code {
+            font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+            font-size: 14px;
+            line-height: 19px;
+        }
+
+        body.wordWrap pre {
+            white-space: pre-wrap;
+        }
+
+        .mac code {
+            font-size: 12px;
+            line-height: 18px;
+        }
+
+        code>div {
+            padding: 16px;
+            border-radius: 3px;
+            overflow: auto;
+        }
+        /** Theming */
+
+        .vscode-light {
+            color: rgb(30, 30, 30);
+        }
+
+        .vscode-dark {
+            color: #DDD;
+        }
+
+        .vscode-high-contrast {
+            color: white;
+        }
+
+        .vscode-light code {
+            color: #A31515;
+        }
+
+        .vscode-dark code {
+            color: #D7BA7D;
+        }
+
+        .vscode-light code>div {
+            background-color: rgba(220, 220, 220, 0.4);
+        }
+
+        .vscode-dark code>div {
+            background-color: rgba(10, 10, 10, 0.4);
+        }
+
+        .vscode-high-contrast code>div {
+            background-color: rgb(0, 0, 0);
+        }
+
+        .vscode-high-contrast h1 {
+            border-color: rgb(0, 0, 0);
+        }
+
+        .vscode-light table>thead>tr>th {
+            border-color: rgba(0, 0, 0, 0.69);
+        }
+
+        .vscode-dark table>thead>tr>th {
+            border-color: rgba(255, 255, 255, 0.69);
+        }
+
+        .vscode-light h1,
+        .vscode-light hr,
+        .vscode-light table>tbody>tr+tr>td {
+            border-color: rgba(0, 0, 0, 0.18);
+        }
+
+        .vscode-dark h1,
+        .vscode-dark hr,
+        .vscode-dark table>tbody>tr+tr>td {
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .vscode-light blockquote,
+        .vscode-dark blockquote {
+            background: rgba(127, 127, 127, 0.1);
+            border-color: rgba(0, 122, 204, 0.5);
+        }
+
+        .vscode-high-contrast blockquote {
+            background: transparent;
+            border-color: #fff;
+        }
+    </style>
+    <style>
+        /* Tomorrow Theme */
+        /* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+        /* Original theme - https://github.com/chriskempson/tomorrow-theme */
+        /* Tomorrow Comment */
+
+        .hljs-comment,
+        .hljs-quote {
+            color: #8e908c;
+        }
+        /* Tomorrow Red */
+
+        .hljs-variable,
+        .hljs-template-variable,
+        .hljs-tag,
+        .hljs-name,
+        .hljs-selector-id,
+        .hljs-selector-class,
+        .hljs-regexp,
+        .hljs-deletion {
+            color: #c82829;
+        }
+        /* Tomorrow Orange */
+
+        .hljs-number,
+        .hljs-built_in,
+        .hljs-builtin-name,
+        .hljs-literal,
+        .hljs-type,
+        .hljs-params,
+        .hljs-meta,
+        .hljs-link {
+            color: #f5871f;
+        }
+        /* Tomorrow Yellow */
+
+        .hljs-attribute {
+            color: #eab700;
+        }
+        /* Tomorrow Green */
+
+        .hljs-string,
+        .hljs-symbol,
+        .hljs-bullet,
+        .hljs-addition {
+            color: #718c00;
+        }
+        /* Tomorrow Blue */
+
+        .hljs-title,
+        .hljs-section {
+            color: #4271ae;
+        }
+        /* Tomorrow Purple */
+
+        .hljs-keyword,
+        .hljs-selector-tag {
+            color: #8959a8;
+        }
+
+        .hljs {
+            display: block;
+            overflow-x: auto;
+            color: #4d4d4c;
+            padding: 0.5em;
+        }
+
+        .hljs-emphasis {
+            font-style: italic;
+        }
+
+        .hljs-strong {
+            font-weight: bold;
+        }
+    </style>
+    <style>
+        ul.contains-task-list {
+            padding-left: 0;
+        }
+
+        ul ul.contains-task-list {
+            padding-left: 40px;
+        }
+
+        .task-list-item {
+            list-style-type: none;
+        }
+
+        .task-list-item-checkbox {
+            vertical-align: middle;
+        }
+    </style>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', 'Ubuntu', 'Droid Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 id="ystart">ystart</h2>
+    <p>简易脚手架，快速搭建一个不包含任何框架或库的项目，根据开发需求增加依赖包</p>
+    <h2 id="">安装</h2>
+    <p>
+        <code>npm install ystart -g || cnpm install ystart -g</code>
+    </p>
+    <h2 id="">使用</h2>
+    <p>在某一个目录下运行</p>
+    <p>
+        <code>ystart init</code>
+    </p>
+    <p>根据提示命令创建项目，结束后</p>
+    <p>
+        <code>cd 项目目录</code>
+    </p>
+    <p>启动本地开发环境</p>
+    <p>
+        <code>npm start</code>
+    </p>
+
 </body>
+
 </html>
