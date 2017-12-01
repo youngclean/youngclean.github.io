@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+</head>
+
+<body>
+    <section class="main-content">
+        <p>关于这个问题很明显是要熟悉浏览器的工作机制，网络上也有答案。 别小看这个问题，它涉及的知识面相当广，要想说清楚，还真不是件容易的事。
+        </p>
+        <p>先从这张著名的图说起，只要搞懂了这张图的每个模块，那我们也就知道是发生什么事了</p>
+        <p>
+            <img src="http://segmentfault.com/img/bVcTMw" alt="浏览器工作原理图">
+        </p>
+        <p>
+            <strong>1.User Interface 用户界面</strong>
+        </p>
+        <blockquote>
+            <p>通俗的说就是浏览器呈现给用户的样子，如顶部（前进，后退，刷新，停止，地址栏，书签栏，状态栏，工具栏等按钮），侧栏（滚动条），底栏（滚动条），自带的开发工具，下拉菜单，下载管理等，当然每个浏览器厂商还有自己的特性。</p>
+        </blockquote>
+        <p>
+            <strong>2.Browser engine 浏览器引擎</strong>
+        </p>
+        <blockquote>
+            <p>从百科上查到引擎（Engine）是电子平台上开发程序或系统的核心组件。 利用引擎，开发者可迅速建立、铺设程序所需的功能，或利用其辅助程序的运转。一般而言，引擎是一个程序或一套系统的支持部分。常见的程序引擎有游戏引擎，搜索引擎，杀毒引擎等。
+                从上图来看，浏览器引擎向上连接用户界面模块，向下连接渲染引擎模块，向右连接数据持久模块，很好的诠释了百科中的定义。
+            </p>
+        </blockquote>
+        <p>
+            <strong>3.Rendering engine 渲染引擎</strong>
+        </p>
+        <blockquote>
+            <p>份量很重的模块，页面的表现及交互体验就是靠它。 从网上摘这么一个片段： 渲染引擎的责任就是将渲染完的放在浏览器窗口中以显示请求的数据。 渲染引擎默认是能显示html、xml和图片，并且通过一些插件可以显示其他类型资源，如使用
+                a PDF viewer插件显示PDF格式。 我们参考的浏览器是-firefox、chrome和safari构造在上面的两种渲染引擎上。Firefox使用是自家生产的mozilla渲染引擎－
+                <a href="http://www-archive.mozilla.org/newlayout/doc/reflow.html">gecko</a>，Safari和chrome都使用
+                <a href="https://www.webkit.org/blog/114/webcore-rendering-i-the-basics/">webkit</a>.
+                <a href="https://www.webkit.org/blog/114/webcore-rendering-i-the-basics/">Webkit</a>是一个开源的渲染引擎，当初只是作为 liunx平台的引擎，通过苹果公司的修改开始支持mac和window系统。</p>
+        </blockquote>
+        <p>它的基本流程是从网络层（networking）获取请求文档的内容，解析HTML/SVG/XHTML，形成Dom树，解析CSS形成CSS规则树，两者结合构建成渲染树，通过JS解释器解析脚本，最后通过UI后台提供的接口绘出最终效果。
+            <a
+                href="http://coolshell.cn/articles/9666.html">这篇文章</a>详细的讨论了渲染引擎的工作原理，这部分是页面性能优化的关键部分，希望看官们仔细理解，这里就不再说了。</p>
+        <p>
+            <strong>4.Networking</strong>
+        </p>
+        <blockquote>
+            <p>用于网络调用，通过调用操作系统或gui框架提供的api。 比如 HTTP,HTTPS 请求，关注下
+                <a href="http://www8.org/w8-papers/5c-protocols/key/key.html">HTTP协议</a>。
+                <a href="http://wuduoyi.com/note/what-happen-when-browser-loading-the-page/">这篇文章</a>对于提升页面加载响应速度有一个详细的总结。</p>
+        </blockquote>
+        <p>
+            <strong>Javascript Interpreter javascript解释器</strong>
+        </p>
+        <blockquote>
+            <p>解析和运行JS 不同浏览器有不同的javascript解释器，请看
+                <a href="http://www.cnblogs.com/gdutbean/archive/2012/02/21/2362003.html">这里</a>。</p>
+        </blockquote>
+        <p>
+            <strong>UI Backend</strong>
+        </p>
+        <blockquote>
+            <p>用于绘制基本的部件，例如combo 和windows。 它暴露的是一个一般化的接口而不是为某个特殊平台单独处理。 底层使用的是操作系统用户接口方法。
+            </p>
+        </blockquote>
+        <p>
+            <strong>Data Persistence</strong>
+        </p>
+        <blockquote>
+            <p>这是一个持久层。浏览器需要保存各种分类的数据在硬盘，例如cookies和HTML5的本地数据库等，都是通过这层来实现的。</p>
+        </blockquote>
+        <p>
+            <strong>最后总结</strong>
+        </p>
+        <blockquote>
+            <p>一旦输入URL，DNS会进行查询与解析，然后建立连接，在服务器端会有数据库查询，业务处理，返回数据，最后渲染页面，执行脚本，加载各种资源，如图片，视频，音乐等。</p>
+        </blockquote>
+        <hr>
+        <p>下面这篇文章基本和前端知识没多大关系，不过了解下没有坏处<br />
+            <a href="http://div.io/topic/457">从输入 URL 到页面加载完成的过程中都发生了什么事情？</a>
+        </p>
+        <p>
+            <strong>参考</strong>：</p>
+        <ul>
+            <li>
+                <p>
+                    <a href="http://baike.baidu.com/view/53607.htm">引擎</a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="http://blog.jobbole.com/1115/">再谈Yahoo关于性能优化的N条规则</a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="http://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/">浏览器的工作原理：新式网络浏览器幕后揭秘</a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="http://grahamle.github.io/2013/10/%E6%96%B0web%E5%89%8D%E7%AB%AF/">新web应用架构</a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="http://hi.baidu.com/xzf20082004/item/03aa75072b7f8218acdc7068">HTTP 头部详解</a>
+                </p>
+            </li>
+        </ul>
+    </section>
+</body>
+
+</html>

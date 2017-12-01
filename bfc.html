@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    </head>
+</head>
+
+<body>
+    <section class="main-content">
+        <p>块格式化上下文 Block formatting context<br />行内格式化上下文 Inline formatting context</p>
+        <p>它决定了元素如何对其内容进行定位，以及与其他元素的关系和相互作用。</p>
+        <p>
+            <strong>创建BFC</strong>
+        </p>
+        <ul>
+            <li>浮动元素</li>
+            <li>绝对定位元素</li>
+            <li>行内块元素</li>
+            <li>单元格</li>
+            <li>表格标题元素</li>
+            <li>overflow 非 &quot;visible&quot;的元素</li>
+            <li>css3中
+                <a href="http://www.w3.org/TR/css3-flexbox/">flex boxes</a>
+            </li>
+        </ul>
+        <h2 id="ie-layout-haslayout">IE 专有的 Layout 及 hasLayout 属性</h2>
+        <p>'Layout' 是 IE 的专有概念，它决定了元素如何对其内容进行定位和尺寸计算，与其他元素的关系和相互作用，以及对应用还有使用者的影响。</p>
+        <p>概念说明： 
+            <br />'Layout' 可以被某些 CSS property（特性）不可逆的触发，而某些 HTML 元素本身就具有 layout 。 <br />'Layout' 在 IE 中可以通过 hasLayout 属性来判断一个元素是否拥有layout ，如 object.currentStyle.hasLayout 。
+            <br />'Layout' 是 IE 浏览器渲染引擎的一个内部组成部分。在 IE 浏览器中，一个元素要么自己对自身的内容进行组织和计算大小， 要么依赖于包含块来计算尺寸和组织内容。为了协调这两种方式的矛盾，渲染引擎采用了
+            'hasLayout' 属性，属性值可以为 true 或 false。 当一个元素的 'hasLayout' 属性值为 true 时，我们说这个元素有一个布局（layout），或拥有布局。 
+            <br /><br />触发方式：
+            <br />默认拥有布局的元素：
+        </p>
+        <pre><code>&lt;html&gt;, &lt;body&gt;
+&lt;table&gt;, &lt;tr&gt;, &lt;th&gt;, &lt;td&gt;
+&lt;img&gt;,&lt;hr&gt;
+&lt;input&gt;, &lt;button&gt;, &lt;select&gt;, &lt;textarea&gt;, &lt;fieldset&gt;, &lt;legend&gt;
+&lt;iframe&gt;, &lt;embed&gt;, &lt;object&gt;, &lt;applet&gt;,&lt;marquee&gt;
+</code></pre>
+        <p>可触发 hasLayout 的 CSS 特性： <br />display: inline-block<br />height: (除 auto 外任何值) <br />width: (除 auto 外任何值) <br />float: (left 或 right)<br />position:
+            absolute<br />writing-mode: tb-rl<br />zoom: (除 normal 外任意值)<br />IE7 还有一些额外的属性(不完全列表)可以触发 hasLayout ：<br /> min-height: (任意值) <br />min-width:
+            (任意值) <br />max-height: (除 none 外任意值) <br />max-width: (除 none 外任意值) <br />overflow: (除 visible 外任意值，仅用于块级元素) overflow-x: (除 visible
+            外任意值，仅用于块级元素) <br />overflow-y: (除 visible 外任意值，仅用于块级元素)<br /> position: fixed<br /> IE6 以前的版本（也包括 IE6 及以后所有版本的混杂模式，其实这种混杂模式在渲染方面就相当于
+            IE 5.5）， 通过设置任何元素的 'width' 或 'height'（非auto）都可以触发 hasLayout ； 但在 IE6 和 IE7 的标准模式中的行内元素上却不行，设置 'display:inline-block'
+            才可以。
+        </p>
+        <h2 id="haslayout-block-formatting-context">hasLayout 和 block formatting context 的异同及可能产生的问题</h2>
+        <p>
+            <strong>区别</strong>
+        </p>
+        <p>在 IE8(S) 之前的版本中，没有规范中提及的 block formatting context 和 Inline formatting context 概念，而是用 hasLayout 来达到相似的目的。 在 IE 中可通过设置
+            'width'、'height'、'min-width'、'min-height'、'max-width'、'max-height'、'zoom'、'writing-mode' 来触发 hasLayout，而这些特性值的设置不能够使元素创建
+            block formatting context。 在 IE 中很多元素默认就是拥有布局的，如 IPUNT, BUTTON, SELECT, TEXTAREA 等，但是这些元素在标准中会形成 Inline formatting
+            context 。</p>
+        <p>
+            <strong>共同点</strong>
+        </p>
+        <p>两者都是决定了对内容如何定位及大小计算的规则。 两者都决定了与其他元素的相互作用的规则。 'table-cell' 和 'table-caption' 既是 hasLayout 的元素，又是可以创建 block formatting
+            context 的元素。 浮动元素，绝对定位元素，inline-block 元素以及除 'visible' 外任意值的 overflow(IE7) 在 IE 中可以触发 hasLayout，同时在标准中，又可以创建 block
+            formatting context。</p>
+        <p>
+            <strong>可能产生的兼容性问题：</strong>
+        </p>
+        <p>由于 hasLayout 和 block formatting context 是对一类事物的不同理解，并且他们的启用条件不尽相同，因此如果一个元素设计时，在 IE 早期版本中触发了 hasLayout ，但在其他浏览器中又没有创建
+            block formatting context，或者相反，一个元素在 IE 早期版本中没有触发 hasLayout ，在其他浏览器中却创建了 block formatting context（如设置了 'overflow:hidden'
+            ），将导致页面布局的重大差异。
+        </p>
+        <p>
+            <strong>解决方案</strong><br />
+            仅当一个元素即在 IE 早期版本中触发了 hasLayout，又在其他浏览器中创建了 block formatting context 时，才能避免上述问题的发生。即同时启用上述两者以保证各浏览器的兼容，或者相反，两者皆不启用。</p>
+        <p>使元素即生成了 block formatting context，又触发了 hasLayout 对于触发 hasLayout 的元素，通过 CSS 设置，使它产生 block formatting context； 生成 block
+            formatting context 但是没有触发 hasLayout 的元素，通过设置 'zoom:1'，使其触发 hasLayout。 使元素即没有触发 hasLayout，又没有创建 block formatting
+            context。
+        </p>
+        <p>w3c传送门：
+            <a href="http://www.w3.org/TR/CSS21/visuren.html#block-formatting">BFC and IFC</a>
+            <br />MDN传送门：
+            <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context">Block formatting context</a>
+        </p>
+        <hr />
+        <p>参考：</p>
+        <ul>
+            <li>
+                <a href="http://caibaojian.com/bfc.html">BFC：Block Formatting Context.</a>
+            </li>
+            <li>
+                <a href="http://www.w3help.org/zh-cn/kb/010/">常规流</a>
+            </li>
+            <li>
+                <a href="http://www.w3help.org/zh-cn/causes/RM8002">hasLayout</a>
+            </li>
+        </ul>
+    </section>
+</body>
+
+</html>
